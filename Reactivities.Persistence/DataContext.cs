@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Reactivities.Domain;
-using System;
 
 namespace Reactivities.Persistence
 {
