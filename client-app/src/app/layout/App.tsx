@@ -41,7 +41,12 @@ const App = () => {
     axios
       .get<IActivity[]>("https://localhost:5001/api/activities")
       .then((response) => {
-        setActivities(response.data);
+        let activities: IActivity[] = [];
+        response.data.map((activity) => {
+          activity.date = activity.date.split(".")[0];
+          activities.push(activity);
+        });
+        setActivities(activities);
       });
   }, []);
 
