@@ -17,8 +17,9 @@ export const NavBar: React.FC<IProps> = ({ handleCreateActivityForm }) => {
         <Menu.Item>
           <Button
             positive
+            type="button"
             content="Create Activity"
-            onClick={() => handleCreateActivityForm()}
+            onClick={handleCreateActivityForm}
           />
         </Menu.Item>
       </Container>
