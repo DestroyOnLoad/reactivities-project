@@ -1,8 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Reactivities.Application.Errors;
 using Reactivities.Domain;
 using Reactivities.Persistence;
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -47,7 +50,8 @@ namespace Reactivities.Application.Activities
             {
                 var activity = await _context.Activities.FindAsync(request.Id);
 
-                if (request == null) throw new Exception("Could not find activity");
+                if (activity == null)
+                    throw new RestException(HttpStatusCode.NotFound, new { activity = "Not found" });
 
                 activity.Title = request.Title ?? activity.Title;
                 activity.Description = request.Description ?? activity.Description;
