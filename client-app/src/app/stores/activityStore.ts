@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { createContext, SyntheticEvent } from "react";
-import agent from "../api/agent";
+import { Activities } from "../api/agent";
 import { IActivity } from "../models/activity";
 
 class ActivityStore {
@@ -40,13 +40,13 @@ class ActivityStore {
   loadActivities = async () => {
     this.loadingIndicator = true;
     try {
-      const activities = await agent.Activities.list();
+      const activities = await Activities.list();
       runInAction(() => {
-        activities.map((activity) => {
+        activities.map<void>((activity) => {
           activity.date = activity.date.split(".")[0];
-          this.activityRegistry.set(activity.id, activity);
-          this.loadingIndicator = false;
+          return this.activityRegistry.set(activity.id, activity);
         });
+        this.loadingIndicator = false;
       });
     } catch (error) {
       runInAction(() => {
@@ -63,7 +63,7 @@ class ActivityStore {
     } else {
       this.loadingIndicator = true;
       try {
-        activity = await agent.Activities.details(id);
+        activity = await Activities.details(id);
         runInAction(() => {
           this.activity = activity;
           this.loadingIndicator = false;
@@ -88,7 +88,7 @@ class ActivityStore {
   createActivity = async (activity: IActivity) => {
     this.submitting = true;
     try {
-      await agent.Activities.create(activity);
+      await Activities.create(activity);
       runInAction(() => {
         this.activityRegistry.set(activity.id, activity);
         this.submitting = false;
@@ -104,7 +104,7 @@ class ActivityStore {
   editActivity = async (activity: IActivity) => {
     this.submitting = true;
     try {
-      await agent.Activities.update(activity);
+      await Activities.update(activity);
       runInAction(() => {
         this.activityRegistry.set(activity.id, activity);
         this.activity = activity;
@@ -125,7 +125,7 @@ class ActivityStore {
     this.submitting = true;
     this.target = event.currentTarget.name;
     try {
-      await agent.Activities.delete(activity.id);
+      await Activities.delete(activity.id);
       runInAction(() => {
         this.activityRegistry.delete(activity.id);
         this.submitting = false;
