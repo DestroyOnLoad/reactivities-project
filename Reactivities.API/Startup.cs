@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Reactivities.Persistence;
 using MediatR;
 using Reactivities.Application.Activities;
+using FluentValidation.AspNetCore;
 
 namespace Reactivities.API
 {
@@ -23,7 +24,6 @@ namespace Reactivities.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
             services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
@@ -36,6 +36,12 @@ namespace Reactivities.API
                 });
             });
             services.AddMediatR(typeof(List.Handler).Assembly);
+            services.AddControllers()
+                .AddFluentValidation(config =>
+                {
+                    //config is targeting the Application Class Library
+                    config.RegisterValidatorsFromAssemblyContaining<Create>();
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
