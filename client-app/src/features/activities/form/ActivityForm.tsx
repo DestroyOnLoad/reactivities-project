@@ -1,13 +1,13 @@
-import React, { FormEvent, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Form, Grid, Segment } from "semantic-ui-react";
 import { IActivity } from "../../../app/models/activity";
-import { v4 as uuid } from "uuid";
 import ActivityStore from "../../../app/stores/activityStore";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router-dom";
 import { LoadingComponent } from "../../../app/layout/LoadingComponent";
 import { Form as FinalForm, Field } from "react-final-form";
 import { TextInput } from "../../../app/common/form/TextInput";
+import { TextAreaInput } from "../../../app/common/form/TextAreaInput";
 
 interface DetailsParams {
   id: string;
@@ -93,11 +93,11 @@ export const ActivityForm: React.FC<RouteComponentProps<DetailsParams>> = ({
                     component={TextInput}
                   />
                   <Field
-                    rows={2}
+                    rows={3}
                     name="description"
                     placeholder="Description"
                     value={activity.description}
-                    component={TextInput}
+                    component={TextAreaInput}
                   />
                   <Field
                     name="category"
