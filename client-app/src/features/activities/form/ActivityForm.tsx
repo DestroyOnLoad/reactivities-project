@@ -12,6 +12,27 @@ import { SelectInput } from "../../../app/common/form/SelectInput";
 import { categoryOptions } from "../../../app/common/options/categoryOptions";
 import { DateInput } from "../../../app/common/form/DateInput";
 import { combineDateAndTime } from "../../../app/common/util/util";
+import {
+  combineValidators,
+  composeValidators,
+  hasLengthGreaterThan,
+  isRequired,
+} from "revalidate";
+
+const validate = combineValidators({
+  title: isRequired({ message: "The event title is required." }),
+  category: isRequired("Category"),
+  description: composeValidators(
+    isRequired("Description"),
+    hasLengthGreaterThan(4)({
+      message: "Description must have a lenght greater than 5 characters",
+    })
+  )(),
+  city: isRequired("City"),
+  venue: isRequired("Venue"),
+  date: isRequired("Date"),
+  time: isRequired("Time"),
+});
 
 interface DetailsParams {
   id: string;
@@ -61,9 +82,10 @@ export const ActivityForm: React.FC<RouteComponentProps<DetailsParams>> = ({
       <Grid.Column width={10}>
         <Segment clearing>
           <FinalForm
+            validate={validate}
             initialValues={activity}
             onSubmit={handleSubmitFinalForm}
-            render={({ handleSubmit }) => {
+            render={({ handleSubmit, invalid, pristine }) => {
               return (
                 <Form onSubmit={handleSubmit} loading={loading}>
                   <Field
@@ -116,7 +138,7 @@ export const ActivityForm: React.FC<RouteComponentProps<DetailsParams>> = ({
                   />
                   <Button
                     loading={submitting}
-                    disabled={loading}
+                    disabled={loading || invalid || pristine}
                     floated="right"
                     positive
                     type="submit"
