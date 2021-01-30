@@ -8,12 +8,16 @@ interface IProps extends FieldRenderProps<Date>, FormFieldProps {}
 export const DateInput: React.FC<IProps> = ({
   input,
   width,
+  date = false,
+  time = false,
   placeholder,
   meta: { touched, error },
 }) => {
   return (
     <Form.Field error={touched && !!error} width={width}>
       <DateTimePicker
+        date={date}
+        time={time}
         placeholder={placeholder}
         value={input.value || null}
         onChange={input.onChange}
