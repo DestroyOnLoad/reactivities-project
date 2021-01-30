@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Button, Form, Grid, Segment } from "semantic-ui-react";
-import { IActivityFormValues } from "../../../app/models/activity";
+import { ActivityFormValues } from "../../../app/models/activity";
 import ActivityStore from "../../../app/stores/activityStore";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router-dom";
-import { LoadingComponent } from "../../../app/layout/LoadingComponent";
 import { Form as FinalForm, Field } from "react-final-form";
 import { TextInput } from "../../../app/common/form/TextInput";
 import { TextAreaInput } from "../../../app/common/form/TextAreaInput";
@@ -22,41 +21,19 @@ export const ActivityForm: React.FC<RouteComponentProps<DetailsParams>> = ({
   history,
 }) => {
   const activityStore = useContext(ActivityStore);
-  const {
-    submitting,
-    activity: initialFormState,
-    loadActivity,
-    loadingIndicator,
-    clearActivity,
-  } = activityStore;
+  const { submitting, loadActivity } = activityStore;
 
-  const [activity, setActivity] = useState<IActivityFormValues>({
-    id: undefined,
-    title: "",
-    description: "",
-    date: undefined,
-    time: undefined,
-    city: "",
-    category: "",
-    venue: "",
-  });
+  const [activity, setActivity] = useState(new ActivityFormValues());
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (match.params.id && activity.id) {
-      loadActivity(match.params.id).then(
-        () => initialFormState && setActivity(initialFormState)
-      );
+    if (match.params.id) {
+      setLoading(true);
+      loadActivity(match.params.id)
+        .then((activity) => setActivity(new ActivityFormValues(activity)))
+        .finally(() => setLoading(false));
     }
-    return () => {
-      clearActivity();
-    };
-  }, [
-    loadActivity,
-    clearActivity,
-    match.params.id,
-    initialFormState,
-    activity.id,
-  ]);
+  }, [loadActivity, match.params.id, setLoading]);
 
   // const handleSubmit = () => {
   //   if (activity.id.length === 0) {
@@ -81,17 +58,16 @@ export const ActivityForm: React.FC<RouteComponentProps<DetailsParams>> = ({
     console.log(activity);
   };
 
-  if (loadingIndicator) return <LoadingComponent content="Loading data..." />;
-
   return (
     <Grid>
       <Grid.Column width={10}>
         <Segment clearing>
           <FinalForm
+            initialValues={activity}
             onSubmit={handleSubmitFinalForm}
             render={({ handleSubmit }) => {
               return (
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit} loading={loading}>
                   <Field
                     name="title"
                     placeholder="Title"
@@ -142,12 +118,14 @@ export const ActivityForm: React.FC<RouteComponentProps<DetailsParams>> = ({
                   />
                   <Button
                     loading={submitting}
+                    disabled={loading}
                     floated="right"
                     positive
                     type="submit"
                     content="Submit"
                   />
                   <Button
+                    disabled={loading}
                     floated="right"
                     type="button"
                     content="Cancel"

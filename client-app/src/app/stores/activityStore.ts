@@ -60,15 +60,17 @@ class ActivityStore {
     let activity = this.getActivity(id);
     if (activity !== undefined) {
       this.activity = activity;
+      return activity;
     } else {
       this.loadingIndicator = true;
       try {
         activity = await Activities.details(id);
         runInAction(() => {
-          activity.date = new Date(activity.date!);
+          activity.date = new Date(activity.date);
           this.activity = activity;
           this.loadingIndicator = false;
         });
+        return activity;
       } catch (error) {
         runInAction(() => {
           this.loadingIndicator = false;
