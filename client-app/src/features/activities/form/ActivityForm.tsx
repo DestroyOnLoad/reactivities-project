@@ -3,6 +3,7 @@ import { Button, Form, Grid, Segment } from "semantic-ui-react";
 import { ActivityFormValues } from "../../../app/models/activity";
 import ActivityStore from "../../../app/stores/activityStore";
 import { observer } from "mobx-react-lite";
+import { v4 as uuid } from "uuid";
 import { RouteComponentProps } from "react-router-dom";
 import { Form as FinalForm, Field } from "react-final-form";
 import { TextInput } from "../../../app/common/form/TextInput";
@@ -21,7 +22,12 @@ export const ActivityForm: React.FC<RouteComponentProps<DetailsParams>> = ({
   history,
 }) => {
   const activityStore = useContext(ActivityStore);
-  const { submitting, loadActivity } = activityStore;
+  const {
+    submitting,
+    loadActivity,
+    createActivity,
+    editActivity,
+  } = activityStore;
 
   const [activity, setActivity] = useState(new ActivityFormValues());
   const [loading, setLoading] = useState(false);
@@ -35,27 +41,19 @@ export const ActivityForm: React.FC<RouteComponentProps<DetailsParams>> = ({
     }
   }, [loadActivity, match.params.id, setLoading]);
 
-  // const handleSubmit = () => {
-  //   if (activity.id.length === 0) {
-  //     let newActivity = {
-  //       ...activity,
-  //       id: uuid(),
-  //     };
-  //     createActivity(newActivity).then(() =>
-  //       history.push(`/activities/${newActivity.id}`)
-  //     );
-  //   } else {
-  //     editActivity(activity).then(() =>
-  //       history.push(`/activities/${activity.id}`)
-  //     );
-  //   }
-  // };
-
   const handleSubmitFinalForm = (values: any) => {
     const dateAndTime = combineDateAndTime(values.date, values.time);
     const { date, time, ...activity } = values;
     activity.date = dateAndTime;
-    console.log(activity);
+    if (!activity.id) {
+      let newActivity = {
+        ...activity,
+        id: uuid(),
+      };
+      createActivity(newActivity);
+    } else {
+      editActivity(activity);
+    }
   };
 
   return (
@@ -129,7 +127,11 @@ export const ActivityForm: React.FC<RouteComponentProps<DetailsParams>> = ({
                     floated="right"
                     type="button"
                     content="Cancel"
-                    onClick={() => history.push("/activities")}
+                    onClick={
+                      activity.id
+                        ? () => history.push(`/activities/${activity.id}`)
+                        : () => history.push("/activities")
+                    }
                   />
                 </Form>
               );
