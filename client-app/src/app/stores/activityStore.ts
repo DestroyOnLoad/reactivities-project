@@ -4,10 +4,14 @@ import { toast } from "react-toastify";
 import { history } from "../..";
 import { Activities } from "../api/agent";
 import { IActivity } from "../models/activity";
+import { RootStore } from "./rootStore";
 
-class ActivityStore {
-  constructor() {
+export default class ActivityStore {
+  rootStore: RootStore;
+
+  constructor(rootstore: RootStore) {
     makeAutoObservable(this);
+    this.rootStore = rootstore;
   }
   //observables
   activityRegistry = new Map();
@@ -150,5 +154,3 @@ class ActivityStore {
     }
   };
 }
-
-export default createContext(new ActivityStore());
