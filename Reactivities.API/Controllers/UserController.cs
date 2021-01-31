@@ -1,14 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Reactivities.Application.Users;
-using Reactivities.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Reactivities.API.Controllers
 {
+    [AllowAnonymous]
     public class UserController : BaseController
     {
         [HttpPost("login")]
