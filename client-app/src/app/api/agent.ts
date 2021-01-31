@@ -20,7 +20,7 @@ axios.interceptors.response.use(undefined, (error) => {
     return history.push("/notfound");
   if (status === 500)
     return toast.error("Server Error - check the terminal for more info!");
-  throw error;
+  throw error.response;
 });
 
 const responseBody = (response: AxiosResponse) => response.data;

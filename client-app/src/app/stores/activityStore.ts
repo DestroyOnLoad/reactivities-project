@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { createContext, SyntheticEvent } from "react";
+import { SyntheticEvent } from "react";
 import { toast } from "react-toastify";
 import { history } from "../..";
 import { Activities } from "../api/agent";
