@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Reactivities.Application.Errors;
+using Reactivities.Application.Interfaces;
 using Reactivities.Domain;
 using Reactivities.Persistence;
 using System;
@@ -34,11 +35,13 @@ namespace Reactivities.Application.Users
         {
             private readonly UserManager<AppUser> _userManager;
             private readonly SignInManager<AppUser> _signInManager;
+            private readonly IJwtGenerator _jwtGenerator;
 
-            public Handler(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+            public Handler(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IJwtGenerator jwtGenerator)
             {
                 _userManager = userManager;
                 _signInManager = signInManager;
+                _jwtGenerator = jwtGenerator;
             }
 
             public async Task<User> Handle(Query request, CancellationToken cancellationToken)
@@ -56,7 +59,7 @@ namespace Reactivities.Application.Users
                     return new User
                     {
                         DisplayName = user.DisplayName,
-                        Token = "will be a token",
+                        Token = _jwtGenerator.CreateToken(user),
                         Username = user.UserName,
                         Image = null,
                     };
