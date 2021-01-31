@@ -13,6 +13,9 @@ using Reactivities.Domain;
 using Microsoft.AspNetCore.Identity;
 using Reactivities.Application.Interfaces;
 using Reactivities.Additional.Security;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Reactivities.API
 {
@@ -53,7 +56,18 @@ namespace Reactivities.API
             identityBuilder.AddEntityFrameworkStores<DataContext>();
             identityBuilder.AddSignInManager<SignInManager<AppUser>>();
 
-            services.AddAuthentication();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super secret key"));
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = key,
+                        ValidateAudience = false,
+                        ValidateIssuer = false
+                    };
+                });
 
             services.AddScoped<IJwtGenerator, JwtGenerator>();
         }
@@ -69,10 +83,10 @@ namespace Reactivities.API
 
             app.UseHttpsRedirection();
             
+            app.UseRouting();
             app.UseCors("CorsPolicy");
 
-            app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
