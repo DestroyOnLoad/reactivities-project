@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Reactivities.Application.Errors;
 using Reactivities.Application.Interfaces;
+using Reactivities.Application.Validator;
 using Reactivities.Domain;
 using Reactivities.Persistence;
 using System;
@@ -31,8 +32,8 @@ namespace Reactivities.Application.Users
             {
                 RuleFor(x => x.DisplayName).NotEmpty();
                 RuleFor(x => x.Username).NotEmpty();
-                RuleFor(x => x.Email).NotEmpty();
-                RuleFor(x => x.Password).NotEmpty();
+                RuleFor(x => x.Email).NotEmpty().EmailAddress();
+                RuleFor(x => x.Password).Password();
             }
         }
 
@@ -80,7 +81,7 @@ namespace Reactivities.Application.Users
                     };
                 }
 
-                throw new Exception("Problem saving changes");
+                throw new Exception("Problem creating user");
             }
         }
     }
