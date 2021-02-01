@@ -58,7 +58,7 @@ export default class ActivityStore {
       runInAction(() => {
         this.loadingIndicator = false;
       });
-      console.log(error);
+      throw error;
     }
   };
 
@@ -82,7 +82,7 @@ export default class ActivityStore {
         runInAction(() => {
           this.loadingIndicator = false;
         });
-        console.log(error);
+        throw error;
       }
     }
   };
@@ -109,7 +109,7 @@ export default class ActivityStore {
         this.submitting = false;
       });
       toast.error("Problem submitting data.");
-      console.log(error.response);
+      throw error;
     }
   };
 
@@ -128,7 +128,7 @@ export default class ActivityStore {
         this.submitting = false;
       });
       toast.error("Problem submitting data");
-      console.log(error.response);
+      throw error;
     }
   };
 
@@ -150,7 +150,7 @@ export default class ActivityStore {
         this.submitting = false;
         this.target = "";
       });
-      console.log(error);
+      throw error;
     }
   };
 }
