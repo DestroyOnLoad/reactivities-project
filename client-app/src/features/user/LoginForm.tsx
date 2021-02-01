@@ -2,7 +2,8 @@ import { FORM_ERROR } from "final-form";
 import React, { useContext } from "react";
 import { Form as FinalForm, Field } from "react-final-form";
 import { combineValidators, isRequired } from "revalidate";
-import { Button, Form, Header, Label } from "semantic-ui-react";
+import { Button, Form, Header } from "semantic-ui-react";
+import { ErrorMessage } from "../../app/common/form/ErrorMessage";
 import { TextInput } from "../../app/common/form/TextInput";
 import { IUserFormValues } from "../../app/models/user";
 import { RootStoreContext } from "../../app/stores/rootStore";
@@ -32,7 +33,7 @@ export const LoginForm = () => {
         pristine,
         dirtySinceLastSubmit,
       }) => (
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit} error>
           <Header
             as="h2"
             content="Login to Reactivities"
@@ -47,10 +48,9 @@ export const LoginForm = () => {
             type="password"
           />
           {submitError && !dirtySinceLastSubmit && (
-            <Label
-              color="red"
-              basic
-              content={submitError.status === 401 ? "Unauthorized" : "Error"}
+            <ErrorMessage
+              error={submitError}
+              text="Invalid email or password"
             />
           )}
           <Button
