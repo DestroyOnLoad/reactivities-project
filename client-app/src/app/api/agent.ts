@@ -6,6 +6,17 @@ import { IUser, IUserFormValues } from "../models/user";
 
 axios.defaults.baseURL = "https://localhost:5001/api";
 
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("jwt");
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 axios.interceptors.response.use(undefined, (error) => {
   if (error.message === "Network Error" && !error.response)
     return toast.error("Network connectivity error");
