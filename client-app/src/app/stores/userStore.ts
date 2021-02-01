@@ -20,6 +20,17 @@ export default class UserStore {
     return !!this.user;
   }
 
+  getUser = async () => {
+    try {
+      const user = await User.current();
+      runInAction(() => {
+        this.user = user;
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   //actions
   login = async (values: IUserFormValues) => {
     try {

@@ -1,5 +1,5 @@
 import { RootStore } from "./rootStore";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 
 export default class CommonStore {
   rootStore: RootStore;
@@ -7,15 +7,25 @@ export default class CommonStore {
   constructor(rootStore: RootStore) {
     makeAutoObservable(this);
     this.rootStore = rootStore;
+
+    reaction(
+      () => this.token,
+      (token) => {
+        if (token) {
+          localStorage.setItem("jwt", token);
+        } else {
+          localStorage.removeItem("jwt");
+        }
+      }
+    );
   }
 
   //observables
-  token: string | null = null;
+  token: string | null = localStorage.getItem("jwt");
   appLoaded = false;
 
   //actions
   setToken = (token: string | null) => {
-    localStorage.setItem("jwt", token!);
     this.token = token;
   };
 
