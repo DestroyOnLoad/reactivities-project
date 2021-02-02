@@ -3,6 +3,7 @@ import { SyntheticEvent } from "react";
 import { toast } from "react-toastify";
 import { history } from "../..";
 import { Activities } from "../api/agent";
+import { setActivityProps } from "../common/util/util";
 import { IActivity } from "../models/activity";
 import { RootStore } from "./rootStore";
 
@@ -45,11 +46,12 @@ export default class ActivityStore {
   //actions
   loadActivities = async () => {
     this.loadingIndicator = true;
+    const user = this.rootStore.userStore.user!;
     try {
       const activities = await Activities.list();
       runInAction(() => {
         activities.map<void>((activity) => {
-          activity.date = new Date(activity.date);
+          setActivityProps(activity, user);
           return this.activityRegistry.set(activity.id, activity);
         });
         this.loadingIndicator = false;
@@ -64,6 +66,7 @@ export default class ActivityStore {
 
   loadActivity = async (id: string) => {
     let activity = this.getActivity(id);
+    const user = this.rootStore.userStore.user!;
     if (activity !== undefined) {
       this.activity = activity;
       return activity;
@@ -72,7 +75,7 @@ export default class ActivityStore {
       try {
         activity = await Activities.details(id);
         runInAction(() => {
-          activity.date = new Date(activity.date);
+          setActivityProps(activity, user);
           this.activity = activity;
           this.activityRegistry.set(activity.id, activity);
           this.loadingIndicator = false;
