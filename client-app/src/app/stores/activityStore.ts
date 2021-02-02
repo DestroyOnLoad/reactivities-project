@@ -20,6 +20,7 @@ export default class ActivityStore {
   loadingIndicator = false;
   submitting = false;
   target = "";
+  loading = false;
 
   //computed
   get activitiesByDate() {
@@ -100,6 +101,12 @@ export default class ActivityStore {
     this.submitting = true;
     try {
       await Activities.create(activity);
+      const attendee = createAttendee(this.rootStore.userStore.user!);
+      attendee.isHost = true;
+      let attendees = [];
+      attendees.push(attendee);
+      activity.attendees = attendees;
+      activity.isHost = true;
       runInAction(() => {
         this.activityRegistry.set(activity.id, activity);
         this.submitting = false;
@@ -155,22 +162,46 @@ export default class ActivityStore {
     }
   };
 
-  attendActivity = () => {
+  attendActivity = async () => {
     const attendee = createAttendee(this.rootStore.userStore.user!);
-    if (this.activity) {
-      this.activity.attendees = [...this.activity.attendees, attendee];
-      this.activity.isGoing = true;
-      this.activityRegistry.set(this.activity.id, this.activity);
+    this.loading = true;
+    try {
+      await Activities.attend(this.activity!.id);
+      runInAction(() => {
+        if (this.activity) {
+          this.activity.attendees = [...this.activity.attendees, attendee];
+          this.activity.isGoing = true;
+          this.activityRegistry.set(this.activity.id, this.activity);
+        }
+        this.loading = false;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      });
+      toast.error("Problem joining activity! Please try again soon!");
     }
   };
 
-  cancelAttendance = () => {
-    if (this.activity) {
-      this.activity.attendees = this.activity.attendees.filter(
-        (a) => a.username !== this.rootStore.userStore.user!.username
-      );
-      this.activity.isGoing = false;
-      this.activityRegistry.set(this.activity.id, this.activity);
+  cancelAttendance = async () => {
+    this.loading = true;
+    try {
+      await Activities.unattend(this.activity!.id);
+      runInAction(() => {
+        if (this.activity) {
+          this.activity.attendees = this.activity.attendees.filter(
+            (a) => a.username !== this.rootStore.userStore.user!.username
+          );
+          this.activity.isGoing = false;
+          this.activityRegistry.set(this.activity.id, this.activity);
+        }
+        this.loading = false;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      });
+      toast.error("Problem cancelling attendance! Try again soon!");
     }
   };
 }
