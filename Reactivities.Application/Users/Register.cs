@@ -8,9 +8,8 @@ using Reactivities.Application.Validator;
 using Reactivities.Domain;
 using Reactivities.Persistence;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -77,7 +76,7 @@ namespace Reactivities.Application.Users
                         DisplayName = user.DisplayName,
                         Token = _jwtGenerator.CreateToken(user),
                         Username = user.UserName,
-                        Image = null
+                        Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
                     };
                 }
 

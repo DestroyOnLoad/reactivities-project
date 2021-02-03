@@ -14,6 +14,12 @@ namespace Reactivities.API.Controllers
             return await Mediator.Send(command);
         }
 
+        [HttpPost("{id}/setmain")]
+        public async Task<ActionResult<Unit>> SetMain(string id)
+        {
+            return await Mediator.Send(new SetMain.Command { Id = id });
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Unit>> Delete(string id)
         {
