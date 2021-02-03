@@ -34,7 +34,8 @@ namespace Reactivities.Additional.Photos
                 {
                     var uploadParams = new ImageUploadParams
                     {
-                        File = new FileDescription(file.FileName, stream)
+                        File = new FileDescription(file.FileName, stream),
+                        Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face")
                     };
 
                     uploadResult = _cloudinary.Upload(uploadParams);
@@ -47,13 +48,17 @@ namespace Reactivities.Additional.Photos
             return new PhotoUploadResult
             {
                 PublicId = uploadResult.PublicId,
-                Url = uploadResult.SecureUrl.AbsoluteUri
+                Url = uploadResult.SecureUri.AbsoluteUri
             };
         }
 
         public string DeletePhoto(string photoId)
         {
-            throw new NotImplementedException();
+            var deleteParams = new DeletionParams(photoId);
+
+            var result = _cloudinary.Destroy(deleteParams);
+
+            return result.Result == "ok" ? result.Result : null;
         }
     }
 }
