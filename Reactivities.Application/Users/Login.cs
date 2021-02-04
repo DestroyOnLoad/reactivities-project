@@ -61,7 +61,7 @@ namespace Reactivities.Application.Users
                         DisplayName = user.DisplayName,
                         Token = _jwtGenerator.CreateToken(user),
                         Username = user.UserName,
-                        Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
+                        Image = null
                     };
                 }
 
