@@ -3,6 +3,7 @@ import { createContext } from "react";
 import ActivityStore from "./activityStore";
 import CommonStore from "./commonStore";
 import ModalStore from "./modalStore";
+import ProfileStore from "./profileStore";
 import UserStore from "./userStore";
 
 export class RootStore {
@@ -10,6 +11,7 @@ export class RootStore {
   userStore: UserStore;
   commonStore: CommonStore;
   modalStore: ModalStore;
+  profileStore: ProfileStore;
 
   constructor() {
     makeAutoObservable(this);
@@ -17,6 +19,7 @@ export class RootStore {
     this.userStore = new UserStore(this);
     this.commonStore = new CommonStore(this);
     this.modalStore = new ModalStore(this);
+    this.profileStore = new ProfileStore(this);
   }
 }
 

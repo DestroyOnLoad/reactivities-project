@@ -10,17 +10,28 @@ import {
   Reveal,
 } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
+import { IProfile } from "../../app/models/profile";
 
-const ProfileHeader = () => {
+interface IProps {
+  profile: IProfile;
+}
+
+const ProfileHeader: React.FC<IProps> = ({ profile }) => {
   return (
     <Segment>
       <Grid>
         <Grid.Column width={12}>
           <Item.Group>
             <Item>
-              <Item.Image avatar size="small" src={"/assets/user.png"} />
+              <Item.Image
+                avatar
+                size="small"
+                src={profile?.image || "/assets/user.png"}
+              />
               <Item.Content verticalAlign="middle">
-                <Header as="h1">Display Name</Header>
+                <Header as="h1">
+                  {profile?.displayName || "Display Name"}
+                </Header>
               </Item.Content>
             </Item>
           </Item.Group>

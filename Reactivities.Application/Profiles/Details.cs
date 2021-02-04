@@ -39,7 +39,7 @@ namespace Reactivities.Application.Profiles
                     DisplayName = user.DisplayName,
                     Username = user.UserName,
                     Bio = user.Bio,
-                    Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
+                    Image = null,
                     Photos = user.Photos
                 };
             }
