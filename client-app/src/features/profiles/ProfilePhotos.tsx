@@ -1,24 +1,56 @@
-import React, { useContext } from "react";
-import { Card, Header, Image, Tab } from "semantic-ui-react";
+import React, { useContext, useState } from "react";
+import { Button, Card, Grid, Header, Image, Tab } from "semantic-ui-react";
+import PhotoUploadWidget from "../../app/common/photoUpload/PhotoUploadWidget";
 import { RootStoreContext } from "../../app/stores/rootStore";
 
 export const ProfilePhotos = () => {
   const rootStore = useContext(RootStoreContext);
-  const { profile } = rootStore.profileStore;
+  const { profile, isCurrentUser } = rootStore.profileStore;
+
+  const [addPhotoMode, setAddPhotoMode] = useState(false);
+
   return (
     <Tab.Pane>
-      <Header icon="image" content="Photos" />
-      <Card.Group itemsPerRow={5}>
-        {profile &&
-          profile.photos != null &&
-          profile.photos.map((photo) => {
-            return (
-              <Card key={photo.id}>
-                <Image src={photo?.url} size="medium" />
+      <Grid>
+        <Grid.Column width={16} style={{ paddingBottom: "none" }}>
+          <Header floated="left" icon="image" content="Photos" />
+          {isCurrentUser && (
+            <Button
+              floated="right"
+              basic
+              content={addPhotoMode ? "Cancel" : "Add Photo"}
+              onClick={() => setAddPhotoMode(!addPhotoMode)}
+            />
+          )}
+        </Grid.Column>
+        <Grid.Column width={16}>
+          {addPhotoMode ? (
+            <PhotoUploadWidget />
+          ) : (
+            <Card.Group itemsPerRow={5}>
+              {profile &&
+                profile.photos != null &&
+                profile.photos.map((photo) => {
+                  return (
+                    <Card key={photo.id}>
+                      <Image src={photo?.url} />
+                      {isCurrentUser && (
+                        <Button.Group fluid widths={2}>
+                          <Button basic positive content="Main" />
+                          <Button basic negative icon="trash" />
+                        </Button.Group>
+                      )}
+                    </Card>
+                  );
+                })}
+              <Card>
+                <Image src="/assets/placeholder.png" size="large" />
+                <Card.Content>temp placeholder remove!</Card.Content>
               </Card>
-            );
-          })}
-      </Card.Group>
+            </Card.Group>
+          )}
+        </Grid.Column>
+      </Grid>
     </Tab.Pane>
   );
 };
