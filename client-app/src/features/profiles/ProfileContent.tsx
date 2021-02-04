@@ -1,6 +1,6 @@
 import React from "react";
 import { Tab } from "semantic-ui-react";
-import { ProfilePhotos } from "./ProfilePhotos";
+import ProfilePhotos from "./ProfilePhotos";
 
 const panes = [
   {

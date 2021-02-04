@@ -35,15 +35,17 @@ namespace Reactivities.Application.Photos
             }
             public async Task<Photo> Handle(Command request, CancellationToken cancellationToken)
             {
-                var photoResult = _photoAccessor.AddPhoto(request.File);
+                var photoUploadResult = _photoAccessor.AddPhoto(request.File);
 
-                var user = await _context.Users.SingleOrDefaultAsync(
-                    u => u.UserName == _userAccessor.GetCurrentUsername());
+                var user = await _context.Users
+                    .Include(x => x.Photos)
+                    .SingleOrDefaultAsync(
+                    x => x.UserName == _userAccessor.GetCurrentUsername());
 
                 var photo = new Photo
                 {
-                    Id = photoResult.PublicId,
-                    Url = photoResult.Url
+                    Id = photoUploadResult.PublicId,
+                    Url = photoUploadResult.Url
                 };
 
                 if (!user.Photos.Any(x => x.IsMain))

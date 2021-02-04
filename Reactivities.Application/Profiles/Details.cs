@@ -29,7 +29,9 @@ namespace Reactivities.Application.Profiles
             }
             public async Task<Profile> Handle(Query request, CancellationToken cancellationToken)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(u => u.UserName == request.Username);
+                var user = await _context.Users
+                    .Include(x => x.Photos)
+                    .SingleOrDefaultAsync(u => u.UserName == request.Username);
 
                 if (user == null)
                     throw new RestException(HttpStatusCode.NotFound, new { User = "That user does not exist." });
@@ -39,7 +41,7 @@ namespace Reactivities.Application.Profiles
                     DisplayName = user.DisplayName,
                     Username = user.UserName,
                     Bio = user.Bio,
-                    Image = null,
+                    Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
                     Photos = user.Photos
                 };
             }

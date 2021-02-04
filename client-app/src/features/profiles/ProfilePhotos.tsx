@@ -1,13 +1,23 @@
+import { observer } from "mobx-react-lite";
 import React, { useContext, useState } from "react";
 import { Button, Card, Grid, Header, Image, Tab } from "semantic-ui-react";
 import PhotoUploadWidget from "../../app/common/photoUpload/PhotoUploadWidget";
 import { RootStoreContext } from "../../app/stores/rootStore";
 
-export const ProfilePhotos = () => {
+const ProfilePhotos = () => {
   const rootStore = useContext(RootStoreContext);
-  const { profile, isCurrentUser } = rootStore.profileStore;
+  const {
+    profile,
+    isCurrentUser,
+    uploadPhoto,
+    uploadingPhoto,
+  } = rootStore.profileStore;
 
   const [addPhotoMode, setAddPhotoMode] = useState(false);
+
+  const handleUploadPhoto = (photo: Blob) => {
+    uploadPhoto(photo).then(() => setAddPhotoMode(false));
+  };
 
   return (
     <Tab.Pane>
@@ -25,7 +35,10 @@ export const ProfilePhotos = () => {
         </Grid.Column>
         <Grid.Column width={16}>
           {addPhotoMode ? (
-            <PhotoUploadWidget />
+            <PhotoUploadWidget
+              uploadPhoto={handleUploadPhoto}
+              loading={uploadingPhoto}
+            />
           ) : (
             <Card.Group itemsPerRow={5}>
               {profile &&
@@ -43,10 +56,6 @@ export const ProfilePhotos = () => {
                     </Card>
                   );
                 })}
-              <Card>
-                <Image src="/assets/placeholder.png" size="large" />
-                <Card.Content>temp placeholder remove!</Card.Content>
-              </Card>
             </Card.Group>
           )}
         </Grid.Column>
@@ -54,3 +63,5 @@ export const ProfilePhotos = () => {
     </Tab.Pane>
   );
 };
+
+export default observer(ProfilePhotos);
