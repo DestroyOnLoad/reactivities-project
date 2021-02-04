@@ -11,9 +11,16 @@ const ProfilePhotos = () => {
     isCurrentUser,
     uploadPhoto,
     uploadingPhoto,
+    setMainPhoto,
+    loading,
+    deletePhoto,
   } = rootStore.profileStore;
 
   const [addPhotoMode, setAddPhotoMode] = useState(false);
+  const [target, setTarget] = useState<string | undefined>(undefined);
+  const [deleteTarget, setDeleteTarget] = useState<string | undefined>(
+    undefined
+  );
 
   const handleUploadPhoto = (photo: Blob) => {
     uploadPhoto(photo).then(() => setAddPhotoMode(false));
@@ -49,8 +56,32 @@ const ProfilePhotos = () => {
                       <Image src={photo?.url} />
                       {isCurrentUser && (
                         <Button.Group fluid widths={2}>
-                          <Button basic positive content="Main" />
-                          <Button basic negative icon="trash" />
+                          <Button
+                            name={photo.id}
+                            basic
+                            positive
+                            content="Main"
+                            disabled={
+                              photo.isMain || (loading && target === photo.id)
+                            }
+                            loading={loading && target === photo.id}
+                            onClick={(e) => {
+                              setMainPhoto(photo);
+                              setTarget(e.currentTarget.name);
+                            }}
+                          />
+                          <Button
+                            name={photo.id}
+                            basic
+                            negative
+                            icon="trash"
+                            disabled={photo.isMain}
+                            loading={loading && deleteTarget === photo.id}
+                            onClick={(e) => {
+                              deletePhoto(photo);
+                              setDeleteTarget(e.currentTarget.name);
+                            }}
+                          />
                         </Button.Group>
                       )}
                     </Card>

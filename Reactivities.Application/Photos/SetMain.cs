@@ -30,7 +30,9 @@ namespace Reactivities.Application.Photos
             }
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(
+                var user = await _context.Users
+                    .Include(x => x.Photos)
+                    .SingleOrDefaultAsync(
                     x => x.UserName == _userAccessor.GetCurrentUsername());
 
                 var photo = user.Photos.FirstOrDefault(x => x.Id == request.Id);

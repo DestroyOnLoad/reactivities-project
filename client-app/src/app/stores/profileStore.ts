@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { toast } from "react-toastify";
 import { Profiles } from "../api/agent";
-import { IProfile } from "../models/profile";
+import { IPhoto, IProfile } from "../models/profile";
 import { RootStore } from "./rootStore";
 
 export default class ProfileStore {
@@ -16,6 +16,7 @@ export default class ProfileStore {
   profile: IProfile | null = null;
   loadingProfile = false;
   uploadingPhoto = false;
+  loading = false;
 
   //computed
   get isCurrentUser() {
@@ -62,6 +63,43 @@ export default class ProfileStore {
         this.uploadingPhoto = false;
       });
       toast.error("Problem uploading photo");
+    }
+  };
+
+  setMainPhoto = async (photo: IPhoto) => {
+    this.loading = true;
+    try {
+      await Profiles.setMain(photo.id);
+      runInAction(() => {
+        this.rootStore.userStore.user!.image = photo.url;
+        this.profile!.photos.find((x) => x.isMain)!.isMain = false;
+        this.profile!.photos.find((x) => x.id === photo.id)!.isMain = true;
+        this.profile!.image = photo.url;
+        this.loading = false;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      });
+      toast.error("Problem setting main photo.");
+    }
+  };
+
+  deletePhoto = async (photo: IPhoto) => {
+    this.loading = true;
+    try {
+      await Profiles.delete(photo.id);
+      runInAction(() => {
+        this.profile!.photos = this.profile!.photos.filter(
+          (x) => x.id !== photo.id
+        );
+        this.loading = false;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      });
+      toast.error("Problem deleting photo.");
     }
   };
 }
