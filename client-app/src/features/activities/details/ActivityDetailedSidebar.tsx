@@ -8,7 +8,7 @@ interface IProps {
   attendees: IAttendee[];
 }
 
-export const ActivityDetailedSidebar: React.FC<IProps> = ({ attendees }) => {
+const ActivityDetailedSidebar: React.FC<IProps> = ({ attendees }) => {
   return (
     <Fragment>
       <Segment

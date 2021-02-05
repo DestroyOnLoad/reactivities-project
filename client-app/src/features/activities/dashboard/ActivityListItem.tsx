@@ -4,11 +4,9 @@ import { Link } from "react-router-dom";
 import { Button, Icon, Item, Label, Segment } from "semantic-ui-react";
 import { IActivity } from "../../../app/models/activity";
 import { format } from "date-fns";
-import { ActivityListItemAttendees } from "./ActivityListItemAttendees";
+import ActivityListItemAttendees from "./ActivityListItemAttendees";
 
-export const ActivityListItem: React.FC<{ activity: IActivity }> = ({
-  activity,
-}) => {
+const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
   const host = activity.attendees.filter((a) => a.isHost)[0];
   return (
     <Segment.Group>

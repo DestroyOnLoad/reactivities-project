@@ -4,7 +4,7 @@ import React from "react";
 import { Segment, Grid, Icon } from "semantic-ui-react";
 import { IActivity } from "../../../app/models/activity";
 
-export const ActivityDetailedInfo: React.FC<{ activity: IActivity }> = ({
+const ActivityDetailedInfo: React.FC<{ activity: IActivity }> = ({
   activity,
 }) => {
   return (

@@ -5,7 +5,7 @@ import { LoadingComponent } from "../../../app/layout/LoadingComponent";
 import ActivityList from "./ActivityList";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 
-export const ActivityDashboard: React.FC = () => {
+const ActivityDashboard: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
   const { loadActivities, loadingIndicator } = rootStore.activityStore;
 

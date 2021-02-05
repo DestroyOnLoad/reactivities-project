@@ -27,12 +27,17 @@ namespace Reactivities.Application.Comments
 
             public Handler(DataContext context, IMapper mapper)
             {
+                _context = context;
                 _mapper = mapper;
             }
             public async Task<CommentDto> Handle(Command request, CancellationToken cancellationToken)
             {
                 var activity = await _context.Activities
+                    .AsSingleQuery()
                     .Include(x => x.Comments)
+                    .Include(x => x.UserActivities)
+                    .ThenInclude(x => x.AppUser)
+                    .ThenInclude(x => x.Photos)
                     .SingleOrDefaultAsync(x => x.Id == request.ActivityId);
 
                 if (activity == null)

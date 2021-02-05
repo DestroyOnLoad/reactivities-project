@@ -31,9 +31,11 @@ namespace Reactivities.Application.Activities
             public async Task<ActivityDto> Handle(Query request, CancellationToken cancellationToken)
             {
                 var activity = await _context.Activities
+                    .AsSingleQuery()
                     .Include(a => a.UserActivities)
                     .ThenInclude(u => u.AppUser)
                     .ThenInclude(x => x.Photos)
+                    .Include(x => x.Comments)
                     .SingleOrDefaultAsync(a => request.Id == a.Id);
 
                 if (activity == null)

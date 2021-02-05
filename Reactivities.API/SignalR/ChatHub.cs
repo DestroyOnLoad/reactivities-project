@@ -26,7 +26,7 @@ namespace Reactivities.API.SignalR
 
             var comment = await _mediator.Send(command);
 
-            await Clients.All.SendAsync("RecieveComment", comment);
+            await Clients.All.SendAsync("ReceiveComment", comment);
         }
     }
 }

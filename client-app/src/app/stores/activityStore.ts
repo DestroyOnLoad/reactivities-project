@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import { history } from "../..";
 import { Activities } from "../api/agent";
 import { createAttendee, setActivityProps } from "../common/util/util";
-import { IActivity } from "../models/activity";
+import { IActivity, IComment } from "../models/activity";
 import { RootStore } from "./rootStore";
 
 export default class ActivityStore {
@@ -233,8 +233,13 @@ export default class ActivityStore {
       .then(() => console.log(this.hubConnection!.state))
       .catch((error) => console.log("Error starting hubconnection: ", error));
 
-    this.hubConnection.on("ReceiveComment", (comment) => {
-      this.activity!.comments = [...this.activity!.comments, comment];
+    this.hubConnection.on("ReceiveComment", (comment: IComment) => {
+      runInAction(() => {
+        if (this.activity) {
+          this.activity.comments = [...this.activity.comments, comment];
+          this.activityRegistry.set(this.activity.id, this.activity);
+        }
+      });
     });
   };
 

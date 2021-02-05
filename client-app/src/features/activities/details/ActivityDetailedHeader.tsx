@@ -19,7 +19,7 @@ const activityImageTextStyle = {
   color: "white",
 };
 
-export const ActivityDetailedHeader: React.FC<{ activity: IActivity }> = ({
+const ActivityDetailedHeader: React.FC<{ activity: IActivity }> = ({
   activity,
 }) => {
   const rootStore = useContext(RootStoreContext);

@@ -1,8 +1,6 @@
 import React, { Fragment, useContext, useEffect } from "react";
 import { Container } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
-import NavBar from "../../features/nav/NavBar";
-import ActivityDashboard from "../../features/activities/dashboard/ActivityDashboard";
 import { observer } from "mobx-react-lite";
 import {
   Route,
@@ -11,8 +9,10 @@ import {
   withRouter,
 } from "react-router-dom";
 import { HomePage } from "../../features/home/HomePage";
+import NavBar from "../../features/nav/NavBar";
 import ActivityForm from "../../features/activities/form/ActivityForm";
 import ActivityDetails from "../../features/activities/details/ActivityDetails";
+import ActivityDashboard from "../../features/activities/dashboard/ActivityDashboard";
 import NotFound from "./NotFound";
 import { ToastContainer } from "react-toastify";
 import { RootStoreContext } from "../stores/rootStore";
