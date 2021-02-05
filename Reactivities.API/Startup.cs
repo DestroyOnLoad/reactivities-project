@@ -51,6 +51,8 @@ namespace Reactivities.API
             services.AddMediatR(typeof(List.Handler).Assembly);
             services.AddAutoMapper(typeof(List.Handler).Assembly);
 
+            services.AddSignalR();
+
             services.AddControllers(options => 
             {
                 var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
