@@ -20,13 +20,36 @@ namespace Reactivities.API.SignalR
 
         public async Task SendComment(Create.Command command)
         {
-            var username = Context.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            string username = GetUsername();
 
             command.Username = username;
 
             var comment = await _mediator.Send(command);
 
-            await Clients.All.SendAsync("ReceiveComment", comment);
+            await Clients.Group(command.ActivityId.ToString()).SendAsync("ReceiveComment", comment);
+        }
+
+        public async Task AddToGroup(string groupName)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+
+            string username = GetUsername();
+
+            await Clients.Group(groupName).SendAsync("Send", $"{username} has joined the group");
+        }
+
+        public async Task RemoveFromGroup(string groupName)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+
+            string username = GetUsername();
+
+            await Clients.Group(groupName).SendAsync("Send", $"{username} has left the group");
+        }
+
+        private string GetUsername()
+        {
+            return Context.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
         }
     }
 }

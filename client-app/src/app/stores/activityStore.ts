@@ -112,6 +112,7 @@ export default class ActivityStore {
       let attendees = [];
       attendees.push(attendee);
       activity.attendees = attendees;
+      activity.comments = [];
       activity.isHost = true;
       runInAction(() => {
         this.activityRegistry.set(activity.id, activity);
@@ -220,7 +221,7 @@ export default class ActivityStore {
     }
   };
 
-  createHubConnection = () => {
+  createHubConnection = (activityId: string) => {
     this.hubConnection = new HubConnectionBuilder()
       .withUrl("https://localhost:5001/chat", {
         accessTokenFactory: () => this.rootStore.commonStore.token!,
@@ -231,19 +232,25 @@ export default class ActivityStore {
     this.hubConnection
       .start()
       .then(() => console.log(this.hubConnection!.state))
+      .then(() => {
+        this.hubConnection!.invoke("AddToGroup", activityId);
+      })
       .catch((error) => console.log("Error starting hubconnection: ", error));
 
     this.hubConnection.on("ReceiveComment", (comment: IComment) => {
       runInAction(() => {
         if (this.activity) {
           this.activity.comments = [...this.activity.comments, comment];
-          this.activityRegistry.set(this.activity.id, this.activity);
         }
       });
     });
   };
 
   stopHubConnection = () => {
-    this.hubConnection!.stop();
+    this.hubConnection!.invoke("RemoveFromGroup", this.activity!.id).then(
+      () => {
+        this.hubConnection!.stop();
+      }
+    );
   };
 }
