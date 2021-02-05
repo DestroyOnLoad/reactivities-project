@@ -211,6 +211,15 @@ export default class ActivityStore {
     }
   };
 
+  createComment = async (values: any) => {
+    values.activityId = this.activity!.id;
+    try {
+      await this.hubConnection!.invoke("SendComment", values);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   createHubConnection = () => {
     this.hubConnection = new HubConnectionBuilder()
       .withUrl("https://localhost:5001/chat", {
