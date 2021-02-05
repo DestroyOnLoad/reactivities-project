@@ -1,3 +1,8 @@
+import {
+  HubConnection,
+  HubConnectionBuilder,
+  LogLevel,
+} from "@microsoft/signalr";
 import { makeAutoObservable, runInAction } from "mobx";
 import { SyntheticEvent } from "react";
 import { toast } from "react-toastify";
@@ -21,6 +26,7 @@ export default class ActivityStore {
   submitting = false;
   target = "";
   loading = false;
+  hubConnection: HubConnection | null = null;
 
   //computed
   get activitiesByDate() {
@@ -203,5 +209,27 @@ export default class ActivityStore {
       });
       toast.error("Problem cancelling attendance! Try again soon!");
     }
+  };
+
+  createHubConnection = () => {
+    this.hubConnection = new HubConnectionBuilder()
+      .withUrl("https://localhost:5001/chat", {
+        accessTokenFactory: () => this.rootStore.commonStore.token!,
+      })
+      .configureLogging(LogLevel.Information)
+      .build();
+
+    this.hubConnection
+      .start()
+      .then(() => console.log(this.hubConnection!.state))
+      .catch((error) => console.log("Error starting hubconnection: ", error));
+
+    this.hubConnection.on("ReceiveComment", (comment) => {
+      this.activity!.comments = [...this.activity!.comments, comment];
+    });
+  };
+
+  stopHubConnection = () => {
+    this.hubConnection!.stop();
   };
 }
