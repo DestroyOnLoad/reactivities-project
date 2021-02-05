@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using AutoMapper;
 using Reactivities.Additional.Photos;
+using Reactivities.API.SignalR;
+using System.Threading.Tasks;
 
 namespace Reactivities.API
 {
@@ -89,6 +91,21 @@ namespace Reactivities.API
                         ValidateAudience = false,
                         ValidateIssuer = false
                     };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrWhiteSpace(accessToken)
+                                && path.StartsWithSegments("/chat"))
+                            {
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             services.AddScoped<IJwtGenerator, JwtGenerator>();
@@ -117,6 +134,7 @@ namespace Reactivities.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chat");
             });
         }
     }
