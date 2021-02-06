@@ -1,17 +1,17 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Reactivities.Application.Errors;
 using Reactivities.Application.Interfaces;
 using Reactivities.Domain;
 using Reactivities.Persistence;
 using System;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.EntityFrameworkCore;
 
 namespace Reactivities.Application.Followers
 {
-    public class Add
+    public class Delete
     {
         public class Command : IRequest
         {
@@ -40,16 +40,10 @@ namespace Reactivities.Application.Followers
 
                 var following = await _context.Followings.SingleOrDefaultAsync(x => x.ObserverId == observer.Id && x.TargetId == x.TargetId);
 
-                if (following != null)
-                    throw new RestException(HttpStatusCode.BadRequest, new { Target = "You are already following this target user" });
+                if (following == null)
+                    throw new RestException(HttpStatusCode.BadRequest, new { Target = "You are not following this target user" });
 
-                following = new UserFollowing
-                {
-                    Observer = observer,
-                    Target = target
-                };
-
-                _context.Followings.Add(following);
+                _context.Followings.Remove(following);
 
                 var success = await _context.SaveChangesAsync() > 0;
 
