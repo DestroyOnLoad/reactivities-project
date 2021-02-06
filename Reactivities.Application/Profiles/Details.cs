@@ -19,31 +19,16 @@ namespace Reactivities.Application.Profiles
 
         public class Handler : IRequestHandler<Query, Profile>
         {
-            private readonly DataContext _context;
-            private readonly IUserAccessor _userAccessor;
+            private readonly IProfileReader _profileReader;
 
-            public Handler(DataContext context, IUserAccessor userAccessor)
+            public Handler(IProfileReader profileReader)
             {
-                _context = context;
-                _userAccessor = userAccessor;
+                _profileReader = profileReader;
             }
             public async Task<Profile> Handle(Query request, CancellationToken cancellationToken)
             {
-                var user = await _context.Users
-                    .Include(x => x.Photos)
-                    .SingleOrDefaultAsync(u => u.UserName == request.Username);
+                return await _profileReader.ReadProfile(request.Username);
 
-                if (user == null)
-                    throw new RestException(HttpStatusCode.NotFound, new { User = "That user does not exist." });
-
-                return new Profile
-                {
-                    DisplayName = user.DisplayName,
-                    Username = user.UserName,
-                    Bio = user.Bio,
-                    Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
-                    Photos = user.Photos
-                };
             }
         }
     }

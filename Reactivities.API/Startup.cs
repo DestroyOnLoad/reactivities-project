@@ -22,6 +22,7 @@ using AutoMapper;
 using Reactivities.Additional.Photos;
 using Reactivities.API.SignalR;
 using System.Threading.Tasks;
+using Reactivities.Application.Profiles;
 
 namespace Reactivities.API
 {
@@ -111,6 +112,7 @@ namespace Reactivities.API
             services.AddScoped<IJwtGenerator, JwtGenerator>();
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+            services.AddScoped<IProfileReader, ProfileReader>();
             services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
         }
 
