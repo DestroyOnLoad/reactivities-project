@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Reactivities.Application.Errors;
 using Reactivities.Application.Interfaces;
-using Reactivities.Domain;
 using Reactivities.Persistence;
 using System;
 using System.Net;
