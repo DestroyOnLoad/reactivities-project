@@ -32,7 +32,7 @@ namespace Reactivities.Application.Followers
             {
                 var observer = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUsername());
 
-                var target = await _context.Users.FindAsync(request.Username);
+                var target = await _context.Users.SingleOrDefaultAsync(x => x.UserName == request.Username);
 
                 if (target == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Target = "Target user does not exist" });

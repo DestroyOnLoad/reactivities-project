@@ -33,14 +33,14 @@ namespace Reactivities.Application.Followers
             {
                 var observer = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUsername());
 
-                var target = await _context.Users.FindAsync(request.Username);
+                var target = await _context.Users.SingleOrDefaultAsync(x => x.UserName == request.Username);
 
                 if (target == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Target = "Target user does not exist" });
 
                 var following = await _context.Followings.SingleOrDefaultAsync(x => x.ObserverId == observer.Id && x.TargetId == x.TargetId);
 
-                if (following != null)
+                if (following.Target != null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Target = "You are already following this target user" });
 
                 following = new UserFollowing

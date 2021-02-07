@@ -88,4 +88,8 @@ export const Profiles = {
     requests.postForm(`/photos`, photo),
   setMain: (id: string) => requests.post(`/photos/${id}/setMain`, {}),
   delete: (id: string) => requests.delete(`/photos/${id}`),
+  follow: (username: string) =>
+    requests.post(`/profiles/${username}/follow`, {}),
+  unfollow: (username: string) =>
+    requests.delete(`/profiles/${username}/follow`),
 };

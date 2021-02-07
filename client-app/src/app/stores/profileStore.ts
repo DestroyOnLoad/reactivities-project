@@ -102,4 +102,38 @@ export default class ProfileStore {
       toast.error("Problem deleting photo.");
     }
   };
+
+  followUser = async (username: string) => {
+    this.loading = true;
+    try {
+      await Profiles.follow(username);
+      runInAction(() => {
+        this.profile!.isFollowing = true;
+        this.profile!.followersCount++;
+        this.loading = false;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      });
+      toast.error("Problem attempting to follow user.");
+    }
+  };
+
+  unfollowUser = async (username: string) => {
+    this.loading = true;
+    try {
+      await Profiles.unfollow(username);
+      runInAction(() => {
+        this.profile!.isFollowing = false;
+        this.profile!.followersCount--;
+        this.loading = false;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      });
+      toast.error("Problem attempting to unfollow user.");
+    }
+  };
 }
