@@ -12,6 +12,8 @@ import { createAttendee, setActivityProps } from "../common/util/util";
 import { IActivity, IComment } from "../models/activity";
 import { RootStore } from "./rootStore";
 
+const LIMIT = 2;
+
 export default class ActivityStore {
   rootStore: RootStore;
 
@@ -27,6 +29,8 @@ export default class ActivityStore {
   target = "";
   loading = false;
   hubConnection: HubConnection | null = null;
+  activityCount = 0;
+  page = 0;
 
   //computed
   get activitiesByDate() {
@@ -50,16 +54,26 @@ export default class ActivityStore {
     );
   }
 
+  get totalPages() {
+    return Math.ceil(this.activityCount / LIMIT);
+  }
+
   //actions
+  setPage = (page: number) => {
+    this.page = page;
+  };
+
   loadActivities = async () => {
     this.loadingIndicator = true;
     try {
-      const activities = await Activities.list();
+      const activitiesEnvelope = await Activities.list(LIMIT, this.page);
+      const { activities, activityCount } = activitiesEnvelope;
       runInAction(() => {
         activities.map<void>((activity) => {
           setActivityProps(activity, this.rootStore.userStore.user!);
           return this.activityRegistry.set(activity.id, activity);
         });
+        this.activityCount = activityCount;
         this.loadingIndicator = false;
       });
     } catch (error) {
