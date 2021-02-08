@@ -3,7 +3,7 @@ import {
   HubConnectionBuilder,
   LogLevel,
 } from "@microsoft/signalr";
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, reaction, runInAction } from "mobx";
 import { SyntheticEvent } from "react";
 import { toast } from "react-toastify";
 import { history } from "../..";
@@ -20,6 +20,15 @@ export default class ActivityStore {
   constructor(rootstore: RootStore) {
     makeAutoObservable(this);
     this.rootStore = rootstore;
+
+    reaction(
+      () => this.predicate.keys(),
+      () => {
+        this.page = 0;
+        this.activityRegistry.clear();
+        this.loadActivities();
+      }
+    );
   }
   //observables
   activityRegistry = new Map();
@@ -31,6 +40,28 @@ export default class ActivityStore {
   hubConnection: HubConnection | null = null;
   activityCount = 0;
   page = 0;
+  predicate = new Map();
+
+  setPredicate = (predicate: string, value: string | Date) => {
+    this.predicate.clear();
+    if (predicate !== "all") {
+      this.predicate.set(predicate, value);
+    }
+  };
+
+  get axiosParams() {
+    const params = new URLSearchParams();
+    params.append("limit", String(LIMIT));
+    params.append("offset", `${this.page ? this.page * LIMIT : 0}`);
+    this.predicate.forEach((value, key) => {
+      if (key === "startDate") {
+        params.append(key, value.toISOString());
+      } else {
+        params.append(key, value);
+      }
+    });
+    return params;
+  }
 
   //computed
   get activitiesByDate() {
@@ -66,7 +97,7 @@ export default class ActivityStore {
   loadActivities = async () => {
     this.loadingIndicator = true;
     try {
-      const activitiesEnvelope = await Activities.list(LIMIT, this.page);
+      const activitiesEnvelope = await Activities.list(this.axiosParams);
       const { activities, activityCount } = activitiesEnvelope;
       runInAction(() => {
         activities.map<void>((activity) => {

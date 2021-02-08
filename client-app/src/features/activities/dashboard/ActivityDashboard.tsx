@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Grid, Loader } from "semantic-ui-react";
+import { Grid, Loader } from "semantic-ui-react";
 import { LoadingComponent } from "../../../app/layout/LoadingComponent";
 import ActivityList from "./ActivityList";
 import { RootStoreContext } from "../../../app/stores/rootStore";
